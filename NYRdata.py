@@ -23,14 +23,11 @@ def buildTweets(tweet_file):
 
     """        
     tweets = []
-    #x = 0
     for line in tweet_file:
-        #if x == 5000:
-#            return tweets
+        
         jsn = json.loads(line)
         tweet = jsn
         tweets.append(tweet)
-#        x += 1
 
     tweet_file.seek(0)
     return tweets
