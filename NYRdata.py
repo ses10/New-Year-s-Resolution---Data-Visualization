@@ -6,6 +6,7 @@ for data visualization
 
 import sys
 import json
+import termSentiment
 
 STATES = {
     'AK': 'Alaska',
@@ -187,13 +188,106 @@ def buildStateCount(tweets):
     file.write('\n')
     file.close()    
 
+def computeStateSentiment(tweets):
+    """
+    Computes the sentiments of tweets per U.S. state and writes results
+    to file
+
+    Parameters
+    ----------
+    tweets: list
+            list of json dictionaries each representing a tweet
+            
+    outFile: file object
+             file to be written to
+             
+    """
+
+    global STATES
+
+    stateSentiment = {
+        'AL': {'score': 0, 'count': 0},
+        'AK': {'score': 0, 'count': 0},
+        'AZ': {'score': 0, 'count': 0},
+        'AR': {'score': 0, 'count': 0},
+        'CA': {'score': 0, 'count': 0},
+        'CO': {'score': 0, 'count': 0},
+        'CT': {'score': 0, 'count': 0},
+        'DE': {'score': 0, 'count': 0},
+        'FL': {'score': 0, 'count': 0},
+        'GA': {'score': 0, 'count': 0},
+        'HI': {'score': 0, 'count': 0},
+        'ID': {'score': 0, 'count': 0},
+        'IL': {'score': 0, 'count': 0},
+        'IN': {'score': 0, 'count': 0},
+        'IA': {'score': 0, 'count': 0},
+        'KS': {'score': 0, 'count': 0},
+        'KY': {'score': 0, 'count': 0},
+        'LA': {'score': 0, 'count': 0},
+        'ME': {'score': 0, 'count': 0},
+        'MT': {'score': 0, 'count': 0},
+        'NE': {'score': 0, 'count': 0},
+        'NV': {'score': 0, 'count': 0},
+        'NH': {'score': 0, 'count': 0},
+        'NJ': {'score': 0, 'count': 0},
+        'NM': {'score': 0, 'count': 0},
+        'NY': {'score': 0, 'count': 0},
+        'NC': {'score': 0, 'count': 0},
+        'ND': {'score': 0, 'count': 0},
+        'OH': {'score': 0, 'count': 0},
+        'OK': {'score': 0, 'count': 0},
+        'OR': {'score': 0, 'count': 0},
+        'MD': {'score': 0, 'count': 0},
+        'MA': {'score': 0, 'count': 0},
+        'MI': {'score': 0, 'count': 0},
+        'MN': {'score': 0, 'count': 0},
+        'MS': {'score': 0, 'count': 0},
+        'MO': {'score': 0, 'count': 0},
+        'PA': {'score': 0, 'count': 0},
+        'RI': {'score': 0, 'count': 0},
+        'SC': {'score': 0, 'count': 0},
+        'SD': {'score': 0, 'count': 0},
+        'TN': {'score': 0, 'count': 0},
+        'TX': {'score': 0, 'count': 0},
+        'UT': {'score': 0, 'count': 0},
+        'VT': {'score': 0, 'count': 0},
+        'VA': {'score': 0, 'count': 0},
+        'WA': {'score': 0, 'count': 0},
+        'WV': {'score': 0, 'count': 0},
+        'WI': {'score': 0, 'count': 0},
+        'WY': {'score': 0, 'count': 0}
+        }
+    
+    sentiments = termSentiment.buildSentimentDict('AFINN-111.txt')
+
+    for tweet in tweets:
+        state = tweet['state']
+        text = tweet['text'].split()
+        stateSentiment[state]['count'] += 1
+
+        score = 0
+        for word in text:
+            if word in sentiments:
+                score += sentiments[word]
+                
+        stateSentiment[state]['score'] += score
+
+    file = open('results.txt', 'a')
+    file.write('Average Tweet Sentiment Score per State\n')
+    
+    for state in stateSentiment:
+        file.write(state + ', ' + str(stateSentiment[state]['score'] / float(stateSentiment[state]['count'])) + '\n')
+
+    file.close()
+
 def main():
     tweet_file = open(sys.argv[1])
 
     tweets = buildTweets(tweet_file)
 
     buildStateCount(tweets)
-    
+
+    computeStateSentiment(tweets)
 
 
 if __name__ == '__main__':
