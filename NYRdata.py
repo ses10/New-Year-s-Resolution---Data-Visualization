@@ -174,23 +174,13 @@ def buildStateCount(tweets):
         'WI': 0,
         'WY': 0}
 
-    
+    #count the number of tweets per state
     for tweet in tweets:
-            
-        location = tweet['user']['location']
-        if location == None:
-                continue
-        location = location.split()
-
-        #count the number of tweets per state
-        for word in location:
-            for key in STATES:
-                if word == key or word == STATES[key]:
-                    stateCount[key] += 1
-
+        stateCount[tweet['state']] += 1
 
     file = open('results.txt', 'a')
     file.write('Number of Tweets per State\n')
+    
     for state in stateCount:
         file.write(state + ', ' + str(stateCount[state]) + '\n')
     
